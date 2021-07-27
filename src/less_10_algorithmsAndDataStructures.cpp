@@ -2,7 +2,7 @@
 // Name        : less_10_algorithmsAndDataStructures.cpp
 // Author      : andry antonenko
 // IDE         : Eclipse IDE
-// Description : lesson 9 of the algorithms and data structures
+// Description : lesson 10 of the algorithms and data structures
 //============================================================================
 #include <iostream>
 using namespace std;
