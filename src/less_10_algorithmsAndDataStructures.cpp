@@ -185,6 +185,112 @@ bool checkSequence(const T *pArr, const T *pOpenBracket, const T *pCloseBracket)
 содержащий функцию main и функции, соответствующие заданиям.
 */
 //----------------------------------------------------------------------------
+struct OneLinkNode
+{
+  T data;
+  OneLinkNode *pNext;
+};
+
+struct OneLinkList
+{
+  int size;
+  OneLinkNode *pHead;
+};
+
+void initList(OneLinkList *pList)
+{
+  pList->size = 0;
+  pList->pHead = nullptr;
+}
+
+bool insert(OneLinkList *pList, T aData)
+{
+  OneLinkNode *pNode = new OneLinkNode;
+  if(pNode == nullptr)
+  {
+    cout << "Out of memory" << endl;
+    return false;
+  }
+
+  pNode->data = aData;
+  pNode->pNext = nullptr;
+
+  if(pList->pHead != nullptr)
+  {
+    OneLinkNode *pNodePrev = pList->pHead;
+    while(pNodePrev->pNext != nullptr)
+      pNodePrev = pNodePrev->pNext;
+    pNodePrev->pNext = pNode;
+  }
+  else
+    pList->pHead = pNode;
+
+  pList->size++;
+  return true;
+}
+
+void freeList(OneLinkList *pList)
+{
+  OneLinkNode *n = pList->pHead;
+  while(n != nullptr)
+  {
+    OneLinkNode *tmp = n;
+    n = n->pNext;
+    delete tmp;
+  }
+}
+
+void printNode(OneLinkNode *pNode)
+{
+  if(pNode != nullptr)
+  {
+    cout << pNode->data;
+  }
+}
+
+void printList(OneLinkNode *pNode)
+{
+  if(pNode != nullptr)
+  {
+    printNode(pNode);
+    printList(pNode->pNext);
+  }
+}
+
+bool copyList(OneLinkList *pListFrom, OneLinkList *pListTo)
+{
+  pListTo->size = 0;
+  pListTo->pHead = nullptr;
+  if(pListFrom->pHead != nullptr)
+  {
+    if(!insert(pListTo,pListFrom->pHead->data))
+      return false;
+
+    OneLinkNode *pNode = pListFrom->pHead;
+    while(pNode->pNext != nullptr)
+    {
+      pNode = pNode->pNext;
+      if(!insert(pListTo,pNode->data))
+        return false;
+    }
+  }
+  return true;
+}
+
+bool isSortList(OneLinkList *pList)
+{
+  if(pList->pHead != nullptr)
+  {
+    OneLinkNode *pNode = pList->pHead;
+    while(pNode->pNext != nullptr)
+    {
+      if(pNode->data > pNode->pNext->data)
+        return false;
+      pNode = pNode->pNext;
+    }
+  }
+  return true;
+}
 
 //----------------------------------------------------------------------------
 void task_1(void)
@@ -223,11 +329,49 @@ void task_1(void)
   {
     cout << "Sequence of brackets isn't correctly." << endl;
   }
-
+  cout << endl;
 }
 //----------------------------------------------------------------------------
+void task_2(void)
+{
+  cout << "Task 2\n" << endl;
 
+  OneLinkList list;
 
+  initList(&list);
+
+  T arr[] = "asdfghjklqwert";
+//  T arr[] = "abcdefg";
+
+  int i = 0;
+  while(arr[i] != 0)
+  {
+    insert(&list,arr[i++]);
+  }
+
+  cout << "List: " << endl;
+  printList(list.pHead);
+  cout << endl;
+
+  OneLinkList cpList;
+
+  copyList(&list,&cpList);
+  cout << "Copy of list: " << endl;
+  printList(cpList.pHead);
+  cout << endl;
+
+  if(isSortList(&list))
+  {
+    cout << "List is sorted." << endl;
+  }
+  else
+  {
+    cout << "List isn't sorted." << endl;
+  }
+
+  freeList(&list);
+  freeList(&cpList);
+}
 //----------------------------------------------------------------------------
 int main() {
 //----------------------------------------------------------------------------
@@ -237,7 +381,7 @@ int main() {
   //*/
 //----------------------------------------------------------------------------
   // Task 2
-  /*
+  //*
   task_2();
   //*/
 //----------------------------------------------------------------------------
