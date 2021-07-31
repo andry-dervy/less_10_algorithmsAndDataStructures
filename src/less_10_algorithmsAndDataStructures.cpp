@@ -4,8 +4,13 @@
 // IDE         : Eclipse IDE
 // Description : lesson 10 of the algorithms and data structures
 //============================================================================
+
 #include <iostream>
+
 using namespace std;
+//----------------------------------------------------------------------------
+//#define NDEBUG // в начале файла исходного кода, перед включением заголовочного файла
+#include <cassert>
 //----------------------------------------------------------------------------
 #define T char
 #define NO_MATCH -1
@@ -38,6 +43,8 @@ struct List
 
 void initList(List *pList)
 {
+  assert(pList != nullptr);
+
   pList->size = 0;
   pList->pHead = nullptr;
   pList->pTail = nullptr;
@@ -45,6 +52,8 @@ void initList(List *pList)
 
 bool push(List *pList, T aData)
 {
+  assert(pList != nullptr);
+
   Node *pNode = new Node;
   if(pNode == nullptr)
   {
@@ -75,6 +84,9 @@ bool push(List *pList, T aData)
 
 T pop(List *pList)
 {
+  assert(pList != nullptr);
+  assert(pList->pTail != nullptr);
+
   if(pList->size == 0)
   {
     cout << "Queue is empty" << endl;
@@ -102,15 +114,17 @@ T pop(List *pList)
   return d;
 }
 
-void printNode(Node *pNode)
+void printNode(const Node *pNode)
 {
+  assert(pNode != nullptr);
+
   if(pNode != nullptr)
   {
     cout << pNode->data;
   }
 }
 
-void printList(Node *pNode)
+void printList(const Node *pNode)
 {
   if(pNode != nullptr)
   {
@@ -121,6 +135,8 @@ void printList(Node *pNode)
 
 void freeList(List *pList)
 {
+  assert(pList != nullptr);
+
   Node *n = pList->pHead;
   while(n != nullptr)
   {
@@ -132,6 +148,8 @@ void freeList(List *pList)
 
 int find(const T aData,const T *pBracket)
 {
+  assert(pBracket != nullptr);
+
   int i = -1;
   while(pBracket[++i] != 0)
   {
@@ -145,6 +163,10 @@ int find(const T aData,const T *pBracket)
 
 bool checkSequence(const T *pArr, const T *pOpenBracket, const T *pCloseBracket)
 {
+  assert(pArr != nullptr);
+  assert(pOpenBracket != nullptr);
+  assert(pCloseBracket != nullptr);
+
   List list;
   initList(&list);
 
@@ -179,12 +201,8 @@ bool checkSequence(const T *pArr, const T *pOpenBracket, const T *pCloseBracket)
 //----------------------------------------------------------------------------
 /*
 2. Создать функцию, копирующую односвязный список (без удаления первого списка).
-Реализуйте алгоритм, который определяет, отсортирован ли связный список.
-
-Результатом работы должен стать один файл с кодом на языке С,
-содержащий функцию main и функции, соответствующие заданиям.
 */
-//----------------------------------------------------------------------------
+
 struct OneLinkNode
 {
   T data;
@@ -199,12 +217,16 @@ struct OneLinkList
 
 void initList(OneLinkList *pList)
 {
+  assert(pList != nullptr);
+
   pList->size = 0;
   pList->pHead = nullptr;
 }
 
 bool insert(OneLinkList *pList, T aData)
 {
+  assert(pList != nullptr);
+
   OneLinkNode *pNode = new OneLinkNode;
   if(pNode == nullptr)
   {
@@ -229,8 +251,46 @@ bool insert(OneLinkList *pList, T aData)
   return true;
 }
 
+bool erase(OneLinkList *pList, OneLinkNode *pNode)
+{
+  assert(pList != nullptr);
+  assert(pNode != nullptr);
+
+  if(pList->size != 0)
+  {
+    OneLinkNode *pNodeNext = pList->pHead;
+    OneLinkNode *pNodePrev = pList->pHead;
+    while(pNodeNext != nullptr)
+    {
+      if(pNodeNext == pNode)
+      {
+        OneLinkNode *pNodeTemp = pNodeNext;
+        if(pNodeNext == pList->pHead)
+        {
+          pList->pHead = pList->pHead->pNext;
+          pNodeNext = pList->pHead;
+        }
+        else
+        {
+          pNodePrev->pNext = pNodeNext->pNext;
+          pNodeNext = pNodePrev->pNext;
+        }
+        delete pNodeTemp;
+        pList->size--;
+        return true;
+      }
+      pNodePrev = pNodeNext;
+      pNodeNext = pNodeNext->pNext;
+    }
+//    pNodeNext->pNext = pNode;
+  }
+  return false;
+}
+
 void freeList(OneLinkList *pList)
 {
+  assert(pList != nullptr);
+
   OneLinkNode *n = pList->pHead;
   while(n != nullptr)
   {
@@ -240,8 +300,10 @@ void freeList(OneLinkList *pList)
   }
 }
 
-void printNode(OneLinkNode *pNode)
+void printNode(const OneLinkNode *pNode)
 {
+  assert(pNode != nullptr);
+
   if(pNode != nullptr)
   {
     cout << pNode->data;
@@ -259,8 +321,12 @@ void printList(OneLinkNode *pNode)
 
 bool copyList(OneLinkList *pListFrom, OneLinkList *pListTo)
 {
+  assert(pListFrom != nullptr);
+  assert(pListTo != nullptr);
+
   pListTo->size = 0;
   pListTo->pHead = nullptr;
+
   if(pListFrom->pHead != nullptr)
   {
     if(!insert(pListTo,pListFrom->pHead->data))
@@ -277,8 +343,17 @@ bool copyList(OneLinkList *pListFrom, OneLinkList *pListTo)
   return true;
 }
 
+/*
+3. Реализуйте алгоритм, который определяет, отсортирован ли связный список.
+
+Результатом работы должен стать один файл с кодом на языке С,
+содержащий функцию main и функции, соответствующие заданиям.
+*/
+
 bool isSortList(OneLinkList *pList)
 {
+  assert(pList != nullptr);
+
   if(pList->pHead != nullptr)
   {
     OneLinkNode *pNode = pList->pHead;
@@ -356,8 +431,38 @@ void task_2(void)
   OneLinkList cpList;
 
   copyList(&list,&cpList);
-  cout << "Copy of list: " << endl;
+  cout << "Copying of list: " << endl;
   printList(cpList.pHead);
+  cout << endl;
+
+  cout << "Erasing the 2th element of list." << endl;
+  erase(&cpList,cpList.pHead->pNext);
+  printList(cpList.pHead);
+  cout << endl;
+
+  freeList(&list);
+  freeList(&cpList);
+}
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void task_3(void)
+{
+  cout << "\nTask 3\n" << endl;
+
+  OneLinkList list;
+
+  initList(&list);
+//  T arr[] = "asdfghjklqwert";
+  T arr[] = "abcdefg";
+
+  int i = 0;
+  while(arr[i] != 0)
+  {
+    insert(&list,arr[i++]);
+  }
+
+  cout << "List: " << endl;
+  printList(list.pHead);
   cout << endl;
 
   if(isSortList(&list))
@@ -368,9 +473,7 @@ void task_2(void)
   {
     cout << "List isn't sorted." << endl;
   }
-
   freeList(&list);
-  freeList(&cpList);
 }
 //----------------------------------------------------------------------------
 int main() {
@@ -383,6 +486,11 @@ int main() {
   // Task 2
   //*
   task_2();
+  //*/
+//----------------------------------------------------------------------------
+  // Task 3
+  //*
+  task_3();
   //*/
 //----------------------------------------------------------------------------
 	return 0;
